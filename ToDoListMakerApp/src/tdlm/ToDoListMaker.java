@@ -88,5 +88,6 @@ public class ToDoListMaker extends AppTemplate {
     public static void main(String[] args) {
 	Locale.setDefault(Locale.US);
 	launch(args);
+        //continue looking at code, make edits etc.
     }
 }
