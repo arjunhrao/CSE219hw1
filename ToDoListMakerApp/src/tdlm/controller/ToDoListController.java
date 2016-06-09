@@ -2,6 +2,7 @@ package tdlm.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -44,17 +45,20 @@ import tdlm.data.ToDoItem;
  */
 public class ToDoListController {
     AppTemplate app;
+    DataManager myManager;
     
     public ToDoListController(AppTemplate initApp) {
 	app = initApp;
+        
     }
     
+    public DataManager getDataManager() { return myManager;}
     
     public void processAddItem() {
 	// ENABLE/DISABLE THE PROPER BUTTONS
 	Workspace workspace = (Workspace)app.getWorkspaceComponent();
 	workspace.reloadWorkspace();
-        
+        myManager=(DataManager)app.getDataComponent();
         
         //need a popup dialogue box with multiple input fields for all of the todoitem's data
         
@@ -106,6 +110,8 @@ public class ToDoListController {
         gridPane.add(endDate, 4, 2);
 
         CheckBox completed = new CheckBox();
+        //do i need to make sure that it can't be in the indeterminate state?
+        
         gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 3);
         gridPane.add(completed, 1, 3);
 
@@ -113,7 +119,20 @@ public class ToDoListController {
         Optional<Pair<String, String>> result = dialog.showAndWait();
         
         if (result.isPresent()) {
-            //save the data to myItem and add it to the list
+            //set and save the data to myItem and add it to the arraylist in the datamanager obj myManager
+            myItem.setCategory(category.getText());
+            myItem.setDescription(description.getText());
+            myItem.setStartDate(startDate.getValue());
+            myItem.setEndDate(endDate.getValue());
+            myItem.setCompleted(completed.isSelected());
+            myManager.addItem(myItem);
+            
+            //enable the save button
+            app.getGUI().getSaveButton().setDisable(false);
+            
+            //update the workspace / table
+            workspace.reloadWorkspace();
+            //app.getWorkspaceComponent().getWorkspace().getChildren().clear();
         }
         
         
