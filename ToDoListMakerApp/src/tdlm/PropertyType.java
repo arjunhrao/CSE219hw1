@@ -37,6 +37,7 @@ public enum PropertyType {
     COMPLETED_COLUMN_HEADING,
     
     //other stuff
+    ADD_ITEM_HEADING,
     CATEGORY_PROMPT,
     DESCRIPTION_PROMPT,
     STARTDATE_PROMPT,
