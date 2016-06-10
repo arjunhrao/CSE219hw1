@@ -54,6 +54,41 @@ public class ToDoListController {
     
     public DataManager getDataManager() { return myManager;}
     
+    public void processNameChange() {
+        
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
+        //workspace.setNameTextField("aaaaaaaaaah");
+        //change name upon typing in - actually might not need this because I can do it when I save or load
+        myManager=(DataManager)app.getDataComponent();
+        //update name data
+        myManager.setNameString(workspace.getNameTextField().getText());
+        
+        
+        //enable save button
+        app.getGUI().getSaveButton().setDisable(false);
+	workspace.reloadWorkspace();
+
+    }
+    public void processOwnerChange() {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
+        
+        myManager=(DataManager)app.getDataComponent();
+        
+        myManager.setOwnerString(workspace.getOwnerTextField().getText());
+        /**
+         * if (workspace.getOwnerTextField().getText() == null)
+            myManager.setOwner("");
+        else
+            myManager.setOwner(workspace.getNameTextField().getText());
+            * */
+        
+        
+        //enable save button
+        app.getGUI().getSaveButton().setDisable(false);
+	workspace.reloadWorkspace();
+
+    }
+    
     public void processAddItem() {
 	// ENABLE/DISABLE THE PROPER BUTTONS
 	Workspace workspace = (Workspace)app.getWorkspaceComponent();
@@ -132,7 +167,7 @@ public class ToDoListController {
             
             //update the workspace / table
             workspace.reloadWorkspace();
-            //app.getWorkspaceComponent().getWorkspace().getChildren().clear();
+            //useless line of code: app.getWorkspaceComponent().getWorkspace().getChildren().clear();
         }
         
         
