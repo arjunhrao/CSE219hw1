@@ -224,13 +224,33 @@ public class Workspace extends AppWorkspaceComponent {
         removeItemButton.setOnAction(e->{
             toDoListController.processRemoveItem(selected, itemsTable.getSelectionModel().getSelectedItem());
             selected = false;
+            //clears selection
+            itemsTable.getSelectionModel().clearSelection();
+            //disables appropriate buttons
+            moveUpItemButton.setDisable(true);
+            moveDownItemButton.setDisable(true);
+            removeItemButton.setDisable(true);
             
         });
         moveUpItemButton.setOnAction(e->{
-            toDoListController.processMoveUpItem();
+            toDoListController.processMoveUpItem(selected, itemsTable.getSelectionModel().getSelectedItem(), itemsTable.getSelectionModel().getSelectedIndex());
+            //clears selection, sets selected to false, disables appropriate buttons
+            selected = false;
+            itemsTable.getSelectionModel().clearSelection();
+            moveUpItemButton.setDisable(true);
+            moveDownItemButton.setDisable(true);
+            removeItemButton.setDisable(true);
         });
         moveDownItemButton.setOnAction(e->{
-            toDoListController.processMoveDownItem();
+            //if statement confirms that it's not the last item in the list and only moves it down if it isn't
+            if (itemsTable.getSelectionModel().getSelectedIndex() != itemsTable.getItems().size()-1)
+                toDoListController.processMoveDownItem(selected, itemsTable.getSelectionModel().getSelectedItem(), itemsTable.getSelectionModel().getSelectedIndex());
+            //clears selection
+            selected = false;
+            itemsTable.getSelectionModel().clearSelection();
+            moveUpItemButton.setDisable(true);
+            moveDownItemButton.setDisable(true);
+            removeItemButton.setDisable(true);
         });
         //note: the next bit of code may need to be changed since just clicking in the field lets and pressing any button you save
         nameTextField.setOnKeyPressed(e->{
@@ -242,8 +262,7 @@ public class Workspace extends AppWorkspaceComponent {
         
         
         itemsTable.setOnMouseClicked(e -> {
-            
-            
+           
                 
             if (e.getClickCount() == 2) {
                 ToDoItem it = itemsTable.getSelectionModel().getSelectedItem();
@@ -290,6 +309,13 @@ public class Workspace extends AppWorkspaceComponent {
                 } else {
                     moveDownItemButton.setDisable(true);
                 }
+            }
+            //this code is redundantish because of the else statements above, but that's fine.
+            //the removeButton part was necessary and it's always good to check.
+            if (!selected) {
+                moveUpItemButton.setDisable(true);
+                moveDownItemButton.setDisable(true);
+                removeItemButton.setDisable(true);
             }
                 
             
@@ -365,7 +391,7 @@ public class Workspace extends AppWorkspaceComponent {
 	DataManager dataManager = (DataManager)app.getDataComponent();
         nameTextField.setText(dataManager.getName());
         ownerTextField.setText(dataManager.getOwner());
-
+        
     }
     
     public void setNameTextField(String s) {
