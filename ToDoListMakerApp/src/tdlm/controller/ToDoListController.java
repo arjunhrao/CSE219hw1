@@ -114,7 +114,7 @@ public class ToDoListController {
         //Stage myStage = new Stage();
         
         //creates the dialog
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(props.getProperty(ADD_ITEM_HEADING));
         
         //adds ok and cancel buttons
@@ -150,19 +150,19 @@ public class ToDoListController {
         gridPane.add(new Label(props.getProperty(STARTDATE_PROMPT)), 0, 2);
         gridPane.add(startDate, 1, 2);
 
-        gridPane.add(new Label(props.getProperty(ENDDATE_PROMPT)), 3, 2);
-        gridPane.add(endDate, 4, 2);
+        gridPane.add(new Label(props.getProperty(ENDDATE_PROMPT)), 0, 3);
+        gridPane.add(endDate, 1, 3);
 
         CheckBox completed = new CheckBox();
         //do i need to make sure that it can't be in the indeterminate state?
         
-        gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 3);
-        gridPane.add(completed, 1, 3);
+        gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 4);
+        gridPane.add(completed, 1, 4);
 
         dialog.getDialogPane().setContent(gridPane);
-        Optional<Pair<String, String>> result = dialog.showAndWait();
+        Optional<ButtonType> result = dialog.showAndWait();
         
-        if (result.isPresent()) {
+        if (result.isPresent() && result.get() == okButtonType) {
             //set and save the data to myItem and add it to the arraylist in the datamanager obj myManager
             myItem.setCategory(category.getText());
             myItem.setDescription(description.getText());
@@ -263,8 +263,8 @@ public class ToDoListController {
         //Stage myStage = new Stage();
         
         //creates the dialog
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("testing");
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(props.getProperty(ADD_ITEM_HEADING));
         
         //adds ok and cancel buttons
         ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
@@ -307,22 +307,22 @@ public class ToDoListController {
         gridPane.add(new Label(props.getProperty(STARTDATE_PROMPT)), 0, 2);
         gridPane.add(startDate, 1, 2);
 
-        gridPane.add(new Label(props.getProperty(ENDDATE_PROMPT)), 3, 2);
-        gridPane.add(endDate, 4, 2);
+        gridPane.add(new Label(props.getProperty(ENDDATE_PROMPT)), 0, 3);
+        gridPane.add(endDate, 1, 3);
 
         CheckBox completed = new CheckBox();
         //IMPORTANT: this actually puts the relevant information inside
         completed.setSelected(it.getCompleted());
         //do i need to make sure that it can't be in the indeterminate state?
         
-        gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 3);
-        gridPane.add(completed, 1, 3);
+        gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 4);
+        gridPane.add(completed, 1, 4);
 
         dialog.getDialogPane().setContent(gridPane);
-        Optional<Pair<String, String>> result = dialog.showAndWait();
+        Optional<ButtonType> result = dialog.showAndWait();
         
         
-        if (result.isPresent()) {
+        if (result.isPresent() && result.get() == okButtonType) {
             //set and save the data to myItem and add it to the arraylist in the datamanager obj myManager
             myManager.getItems().get(x).setCategory(category.getText());
             myManager.getItems().get(x).setDescription(description.getText());
