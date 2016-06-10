@@ -285,4 +285,7 @@ public class AppGUI implements AppStyleArbiter {
     
     //accessor method
     public Button getSaveButton() {return saveButton;}
+    //the following was added because I need to access the controller so I can change the value of the
+    //boolean saved when I edit things for sure.
+    public AppFileController getFileController() {return fileController;}
 }
