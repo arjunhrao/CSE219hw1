@@ -1,8 +1,8 @@
 package tdlm.controller;
 
+import java.awt.MouseInfo;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Optional;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -63,6 +63,7 @@ public class ToDoListController {
         //update name data
         myManager.setNameString(workspace.getNameTextField().getText());
         
+        workspace.getNameTextField().selectEnd();
         
         //enable save button
         app.getGUI().getSaveButton().setDisable(false);
@@ -171,12 +172,22 @@ public class ToDoListController {
         }
         
         
-        
-        
     }
     
-    public void processRemoveItem() {
-        
+    public void processRemoveItem(Boolean selected, ToDoItem item) {
+        if (selected) {
+            Workspace workspace = (Workspace)app.getWorkspaceComponent();
+            workspace.reloadWorkspace();
+            
+            myManager=(DataManager)app.getDataComponent();
+            
+            //remove the item
+            myManager.getItems().remove(item);
+            //enable save
+            app.getGUI().getSaveButton().setDisable(false);
+            workspace.reloadWorkspace();
+        }
+                    
     }
     
     public void processMoveUpItem() {
@@ -187,7 +198,102 @@ public class ToDoListController {
         
     }
     
-    public void processEditItem() {
+    public void processEditItem(ToDoItem it) {
+        Workspace workspace = (Workspace)app.getWorkspaceComponent();
         
+        myManager=(DataManager)app.getDataComponent();
+        
+        
+        int x = myManager.getItems().indexOf(it);
+        
+        //Workspace workspace = (Workspace)app.getWorkspaceComponent();
+	workspace.reloadWorkspace();
+        
+        
+        //need a popup dialogue box with multiple input fields for all of the todoitem's data
+        
+        //the following line is included so that we can use things from the xml files
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
+        
+        //creates a stage for the dialog
+        //Stage myStage = new Stage();
+        
+        //creates the dialog
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("testing");
+        
+        //adds ok and cancel buttons
+        ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+        
+        //start creating the boxes/panes for the gui
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(20, 150, 10, 10));
+        
+        TextField category = new TextField();
+        //IMPORTANT: this actually puts the relevant information inside
+        category.setText(it.getCategory());
+        //Note: the next two commented lines of code set the prompty text, which is nice but unnecessary
+        //category.setPromptText(props.getProperty(CATEGORY_PROMPT));
+        TextField description = new TextField();
+        //IMPORTANT: this actually puts the relevant information inside
+        description.setText(it.getDescription());
+        //description.setPromptText("Description");
+
+        //HBox HBox1 = new HBox();
+
+        ToDoItem myItem = new ToDoItem();
+        
+        gridPane.add(new Label(props.getProperty(CATEGORY_PROMPT)), 0, 0);
+        gridPane.add(category, 1, 0);
+        gridPane.add(new Label(props.getProperty(DESCRIPTION_PROMPT)), 0, 1);
+        gridPane.add(description, 1, 1);
+        
+        DatePicker startDate = new DatePicker();
+        DatePicker endDate = new DatePicker();
+        startDate.setValue(myItem.getStartDate());
+        endDate.setValue(myItem.getEndDate());
+        //IMPORTANT: this actually puts the relevant information inside
+        startDate.setValue(it.getStartDate());
+        //IMPORTANT: this actually puts the relevant information inside
+        endDate.setValue(it.getEndDate());
+        
+        gridPane.add(new Label(props.getProperty(STARTDATE_PROMPT)), 0, 2);
+        gridPane.add(startDate, 1, 2);
+
+        gridPane.add(new Label(props.getProperty(ENDDATE_PROMPT)), 3, 2);
+        gridPane.add(endDate, 4, 2);
+
+        CheckBox completed = new CheckBox();
+        //IMPORTANT: this actually puts the relevant information inside
+        completed.setSelected(it.getCompleted());
+        //do i need to make sure that it can't be in the indeterminate state?
+        
+        gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 3);
+        gridPane.add(completed, 1, 3);
+
+        dialog.getDialogPane().setContent(gridPane);
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        
+        
+        if (result.isPresent()) {
+            //set and save the data to myItem and add it to the arraylist in the datamanager obj myManager
+            myManager.getItems().get(x).setCategory(category.getText());
+            myManager.getItems().get(x).setDescription(description.getText());
+            myManager.getItems().get(x).setStartDate(startDate.getValue());
+            myManager.getItems().get(x).setEndDate(endDate.getValue());
+            myManager.getItems().get(x).setCompleted(completed.isSelected());
+            
+            
+            //enable the save button
+            app.getGUI().getSaveButton().setDisable(false);
+            
+            //update the workspace / table
+            workspace.reloadWorkspace();
+            //useless line of code: app.getWorkspaceComponent().getWorkspace().getChildren().clear();
+        }
     }
 }
