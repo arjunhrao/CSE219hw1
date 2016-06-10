@@ -357,4 +357,8 @@ public class AppFileController {
     public boolean isSaved() {
         return saved;
     }
+    //Wanted to be able to  set the value of saved after editing occurs in the ToDoListController.
+    public void setSaved(boolean isSaved) {
+        saved = isSaved;
+    }
 }
