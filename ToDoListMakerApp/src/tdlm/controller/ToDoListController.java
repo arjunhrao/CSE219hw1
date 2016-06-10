@@ -30,6 +30,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 import properties_manager.PropertiesManager;
+import static tdlm.PropertyType.ADD_ITEM_HEADING;
 import static tdlm.PropertyType.CATEGORY_PROMPT;
 import static tdlm.PropertyType.COMPLETED_PROMPT;
 import static tdlm.PropertyType.DESCRIPTION_PROMPT;
@@ -114,7 +115,7 @@ public class ToDoListController {
         
         //creates the dialog
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("testing");
+        dialog.setTitle(props.getProperty(ADD_ITEM_HEADING));
         
         //adds ok and cancel buttons
         ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
