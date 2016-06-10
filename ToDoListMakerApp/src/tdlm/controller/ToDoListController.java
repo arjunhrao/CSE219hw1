@@ -54,6 +54,11 @@ public class ToDoListController {
     
     public DataManager getDataManager() { return myManager;}
     
+    public void changesMade() {
+        //changes the value of saved in the AppFileController to show that the list
+        //has been edited and has not been saved so that exiting will make sure to ask before just exiting.
+        app.getGUI().getFileController().setSaved(false);
+    }
     public void processNameChange() {
         
         Workspace workspace = (Workspace)app.getWorkspaceComponent();
@@ -67,6 +72,7 @@ public class ToDoListController {
         
         //enable save button
         app.getGUI().getSaveButton().setDisable(false);
+        changesMade();
 	workspace.reloadWorkspace();
 
     }
@@ -86,6 +92,7 @@ public class ToDoListController {
         
         //enable save button
         app.getGUI().getSaveButton().setDisable(false);
+        changesMade();
 	workspace.reloadWorkspace();
 
     }
@@ -166,6 +173,7 @@ public class ToDoListController {
             //enable the save button
             app.getGUI().getSaveButton().setDisable(false);
             
+            changesMade();
             //update the workspace / table
             workspace.reloadWorkspace();
             //useless line of code: app.getWorkspaceComponent().getWorkspace().getChildren().clear();
@@ -185,17 +193,51 @@ public class ToDoListController {
             myManager.getItems().remove(item);
             //enable save
             app.getGUI().getSaveButton().setDisable(false);
+            changesMade();
             workspace.reloadWorkspace();
         }
                     
     }
     
-    public void processMoveUpItem() {
-        
+    public void processMoveUpItem(Boolean selected, ToDoItem item, int indexOfSelection) {
+        //if statement confirms that something that isn't the first element, of index 0, is selected
+        if (selected && indexOfSelection != 0) {
+            Workspace workspace = (Workspace)app.getWorkspaceComponent();
+            workspace.reloadWorkspace();
+            
+            myManager=(DataManager)app.getDataComponent();
+            
+            //remove the item before
+            ToDoItem temp = myManager.getItems().get(indexOfSelection-1);
+            myManager.getItems().remove(indexOfSelection-1);
+            //add it back after
+            myManager.getItems().add(indexOfSelection, temp);
+            //enable save
+            app.getGUI().getSaveButton().setDisable(false);
+            changesMade();
+            workspace.reloadWorkspace();
+        }
     }
     
-    public void processMoveDownItem() {
-        
+    public void processMoveDownItem(Boolean selected, ToDoItem item, int indexOfSelection) {
+        //confirms that something is selected
+        if (selected) {
+            Workspace workspace = (Workspace)app.getWorkspaceComponent();
+            workspace.reloadWorkspace();
+            
+            myManager=(DataManager)app.getDataComponent();
+            
+            //remove the item before
+            ToDoItem temp = myManager.getItems().get(indexOfSelection+1);
+            myManager.getItems().remove(indexOfSelection+1);
+            //add it back after
+            myManager.getItems().add(indexOfSelection, temp);
+            
+            //enable save
+            app.getGUI().getSaveButton().setDisable(false);
+            changesMade();
+            workspace.reloadWorkspace();
+        }
     }
     
     public void processEditItem(ToDoItem it) {
@@ -291,7 +333,8 @@ public class ToDoListController {
             //enable the save button
             app.getGUI().getSaveButton().setDisable(false);
             
-            //update the workspace / table
+            //update the workspace / table / savestate
+            changesMade();
             workspace.reloadWorkspace();
             //useless line of code: app.getWorkspaceComponent().getWorkspace().getChildren().clear();
         }
