@@ -96,6 +96,9 @@ public class Workspace extends AppWorkspaceComponent {
     
     // FOR DISPLAYING DEBUG STUFF
     Text debugText;
+    
+    boolean selected;
+    int lastSelectedIndex;
 
     /**
      * Constructor for initializing the workspace, note that this constructor
@@ -231,10 +234,29 @@ public class Workspace extends AppWorkspaceComponent {
             toDoListController.processOwnerChange();
         });
         
+        
         itemsTable.setOnMouseClicked(e -> {
+            
+            
+                
             if (e.getClickCount() == 2) {
-                toDoListController.processEditItem();
+                ToDoItem it = itemsTable.getSelectionModel().getSelectedItem();
+                toDoListController.processEditItem(it);
             }
+            
+            //code that controls selecting and deselecting, ie. clicking outside the usable rows deselects
+            if (selected) {
+                if(lastSelectedIndex == itemsTable.getSelectionModel().getSelectedIndex()){
+                    itemsTable.getSelectionModel().clearSelection();
+                    selected = false;
+                }else{
+                    lastSelectedIndex=itemsTable.getSelectionModel().getSelectedIndex();
+                }
+            }else{
+                lastSelectedIndex=itemsTable.getSelectionModel().getSelectedIndex();
+                selected = true;
+            }
+            
         });
     }
     
