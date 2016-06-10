@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -165,6 +166,7 @@ public class Workspace extends AppWorkspaceComponent {
         itemsToolbar = new HBox();
         addItemButton = gui.initChildButton(itemsToolbar, PropertyType.ADD_ICON.toString(), PropertyType.ADD_ITEM_TOOLTIP.toString(), false);
         removeItemButton = gui.initChildButton(itemsToolbar, PropertyType.REMOVE_ICON.toString(), PropertyType.REMOVE_ITEM_TOOLTIP.toString(), true);
+        
         moveUpItemButton = gui.initChildButton(itemsToolbar, PropertyType.MOVE_UP_ICON.toString(), PropertyType.MOVE_UP_ITEM_TOOLTIP.toString(), true);
         moveDownItemButton = gui.initChildButton(itemsToolbar, PropertyType.MOVE_DOWN_ICON.toString(), PropertyType.MOVE_DOWN_ITEM_TOOLTIP.toString(), true);
         itemsTable = new TableView();
@@ -202,6 +204,8 @@ public class Workspace extends AppWorkspaceComponent {
         workspace.getChildren().add(headingLabel);
         workspace.getChildren().add(detailsBox);
         workspace.getChildren().add(itemsBox);
+        
+        
     }
     
     public void setDebugText(String text) {
@@ -218,7 +222,9 @@ public class Workspace extends AppWorkspaceComponent {
             toDoListController.processAddItem();
         });
         removeItemButton.setOnAction(e->{
-            toDoListController.processRemoveItem();
+            toDoListController.processRemoveItem(selected, itemsTable.getSelectionModel().getSelectedItem());
+            selected = false;
+            
         });
         moveUpItemButton.setOnAction(e->{
             toDoListController.processMoveUpItem();
@@ -245,19 +251,72 @@ public class Workspace extends AppWorkspaceComponent {
             }
             
             //code that controls selecting and deselecting, ie. clicking outside the usable rows deselects
+            //I added to this some code to control enabling and disabling the remove, up, and down buttons
+            //based on which row/index of the table/items is clicked.
             if (selected) {
                 if(lastSelectedIndex == itemsTable.getSelectionModel().getSelectedIndex()){
                     itemsTable.getSelectionModel().clearSelection();
                     selected = false;
+                    removeItemButton.setDisable(true);
+                    moveUpItemButton.setDisable(true);
+                    moveDownItemButton.setDisable(true);
                 }else{
                     lastSelectedIndex=itemsTable.getSelectionModel().getSelectedIndex();
+                    removeItemButton.setDisable(false);
+                    if (itemsTable.getSelectionModel().getSelectedIndex() != 0)
+                        moveUpItemButton.setDisable(false);
+                    if (itemsTable.getSelectionModel().getSelectedIndex() != itemsTable.getItems().size()-1)
+                        moveDownItemButton.setDisable(false);
                 }
             }else{
                 lastSelectedIndex=itemsTable.getSelectionModel().getSelectedIndex();
                 selected = true;
+                removeItemButton.setDisable(false);
+                if (itemsTable.getSelectionModel().getSelectedIndex() != 0)
+                    moveUpItemButton.setDisable(false);
+                if (itemsTable.getSelectionModel().getSelectedIndex() != itemsTable.getItems().size()-1)
+                    moveDownItemButton.setDisable(false);
             }
             
+            if (selected) {
+                removeItemButton.setDisable(false);
+                if (itemsTable.getSelectionModel().getSelectedIndex() != 0) {
+                    moveUpItemButton.setDisable(false);
+                } else {
+                    moveUpItemButton.setDisable(true);
+                }
+                if (itemsTable.getSelectionModel().getSelectedIndex() != itemsTable.getItems().size()-1) {
+                    moveDownItemButton.setDisable(false);
+                } else {
+                    moveDownItemButton.setDisable(true);
+                }
+            }
+                
+            
+            
         });
+        
+        //for when arrow keys are used to navigate the table. Sadly, this doesn't work in that
+        //it uses the previously selected row to decide what buttons to deselect, but that's okay
+        //because this was not necessary for the assignment.
+        itemsTable.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.DOWN || e.getCode() == KeyCode.UP) {
+                if (selected) {
+                    removeItemButton.setDisable(false);
+                    if (itemsTable.getSelectionModel().getSelectedIndex() != 0) {
+                        moveUpItemButton.setDisable(false);
+                    } else {
+                        moveUpItemButton.setDisable(true);
+                    }
+                    if (itemsTable.getSelectionModel().getSelectedIndex() != itemsTable.getItems().size()-1) {
+                        moveDownItemButton.setDisable(false);
+                    } else {
+                        moveDownItemButton.setDisable(true);
+                    }
+                }
+            }
+        });
+        
     }
     
     public void setImage(ButtonBase button, String fileName) {
