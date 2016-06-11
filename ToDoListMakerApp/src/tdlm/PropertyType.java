@@ -7,7 +7,7 @@ package tdlm;
 
 /**
  *
- * @author McKillaGorilla
+ * @author McKillaGorilla and coauthor Arjun Rao
  */
 public enum PropertyType {
     WORKSPACE_HEADING_LABEL,
@@ -38,10 +38,13 @@ public enum PropertyType {
     
     //other stuff
     ADD_ITEM_HEADING,
+    EDIT_ITEM_HEADING,
     CATEGORY_PROMPT,
     DESCRIPTION_PROMPT,
     STARTDATE_PROMPT,
     ENDDATE_PROMPT,
-    COMPLETED_PROMPT
+    COMPLETED_PROMPT,
+    REMOVE_ITEM_HEADING,
+    REMOVE_ITEM_CONFIRMATION_MESSAGE
     
 }
