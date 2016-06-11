@@ -24,7 +24,7 @@ import saf.components.AppStyleArbiter;
  * including all the file controls, but not including the workspace,
  * which would be customly provided for each app.
  * 
- * @author Richard McKenna
+ * @author Richard McKenna and coauthor Arjun Rao
  * @author ?
  * @version 1.0
  */
