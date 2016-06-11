@@ -3,12 +3,15 @@ package tdlm.controller;
 import java.awt.MouseInfo;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -28,20 +31,27 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.stage.StageStyle;
 import javafx.util.Pair;
 import properties_manager.PropertiesManager;
+import static saf.settings.AppPropertyType.APP_CSS;
+import static saf.settings.AppPropertyType.APP_PATH_CSS;
 import static tdlm.PropertyType.ADD_ITEM_HEADING;
 import static tdlm.PropertyType.CATEGORY_PROMPT;
 import static tdlm.PropertyType.COMPLETED_PROMPT;
 import static tdlm.PropertyType.DESCRIPTION_PROMPT;
+import static tdlm.PropertyType.EDIT_ITEM_HEADING;
 import static tdlm.PropertyType.ENDDATE_PROMPT;
+import static tdlm.PropertyType.REMOVE_ITEM_CONFIRMATION_MESSAGE;
+import static tdlm.PropertyType.REMOVE_ITEM_HEADING;
 import static tdlm.PropertyType.STARTDATE_PROMPT;
 import tdlm.data.ToDoItem;
 
 /**
  * This class responds to interactions with todo list editing controls.
  * 
- * @author McKillaGorilla
+ * @author McKillaGorilla and coauthor Arjun Rao
  * @version 1.0
  */
 public class ToDoListController {
@@ -49,6 +59,8 @@ public class ToDoListController {
     DataManager myManager;
     
     public ToDoListController(AppTemplate initApp) {
+        this.getClass().getClassLoader().getResource("tdlm/css/tdlm_style.css");
+
 	app = initApp;
         
     }
@@ -185,17 +197,29 @@ public class ToDoListController {
     
     public void processRemoveItem(Boolean selected, ToDoItem item) {
         if (selected) {
-            Workspace workspace = (Workspace)app.getWorkspaceComponent();
-            workspace.reloadWorkspace();
-            
-            myManager=(DataManager)app.getDataComponent();
-            
-            //remove the item
-            myManager.getItems().remove(item);
-            //enable save
-            app.getGUI().getSaveButton().setDisable(false);
-            changesMade();
-            workspace.reloadWorkspace();
+            //the following line is included so that we can use things from the xml files
+            PropertiesManager props = PropertiesManager.getPropertiesManager();
+            //alerts the user to confirm that they want to remove the item
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle(props.getProperty(REMOVE_ITEM_HEADING));
+            alert.setContentText(props.getProperty(REMOVE_ITEM_CONFIRMATION_MESSAGE));
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                //user was OK with removing the item - proceed to do so
+
+                Workspace workspace = (Workspace)app.getWorkspaceComponent();
+                workspace.reloadWorkspace();
+
+                myManager=(DataManager)app.getDataComponent();
+
+                //remove the item
+                myManager.getItems().remove(item);
+                //enable save
+                app.getGUI().getSaveButton().setDisable(false);
+                changesMade();
+                workspace.reloadWorkspace();
+            }
         }
                     
     }
@@ -264,7 +288,8 @@ public class ToDoListController {
         
         //creates the dialog
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(props.getProperty(ADD_ITEM_HEADING));
+        //dialog.initStyle(StageStyle.TRANSPARENT);
+        dialog.setTitle(props.getProperty(EDIT_ITEM_HEADING));
         
         //adds ok and cancel buttons
         ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
@@ -278,23 +303,52 @@ public class ToDoListController {
         
         TextField category = new TextField();
         //IMPORTANT: this actually puts the relevant information inside
-        category.setText(it.getCategory());
+        if (it.getCategory() != null) {
+            category.setText(it.getCategory());
+        } else {
+            category.setText("");
+        }
         //Note: the next two commented lines of code set the prompty text, which is nice but unnecessary
         //category.setPromptText(props.getProperty(CATEGORY_PROMPT));
         TextField description = new TextField();
         //IMPORTANT: this actually puts the relevant information inside
-        description.setText(it.getDescription());
+        if (it.getDescription() != null) {
+            description.setText(it.getDescription());
+        } else {
+            category.setText("");
+        }
         //description.setPromptText("Description");
 
         //HBox HBox1 = new HBox();
 
         ToDoItem myItem = new ToDoItem();
+        Label catprompt = new Label();
+        //catprompt.setFont(Font.font("Cambria", 32));
+        //catprompt.setTextFill(Color.web("#0076a3"));
+        //this line clearly works... because setting the text of the label to this .path() works and compiles
+        this.getClass().getClassLoader().getResource("tdlm/css/tdlm_style.css");
         
-        gridPane.add(new Label(props.getProperty(CATEGORY_PROMPT)), 0, 0);
+        //after like 5 hours I still can't figure out why the style won't change... :(
+        
+        //catprompt.getStyleClass().add("category_prompt_label");
+        //String stylesheet = props.getProperty(APP_PATH_CSS);
+	//stylesheet += props.getProperty(APP_CSS);
+	//URL stylesheetURL = app.getClass().getResource(stylesheet);
+	//String stylesheetPath = stylesheetURL.toExternalForm();
+	//app.getGUI().getPrimaryScene().getStylesheets().add(stylesheetPath);
+        catprompt.getStyleClass().add("category_prompt_label");
+        
+        catprompt.setText(props.getProperty(CATEGORY_PROMPT));
+        //catprompt.getStyleClass().add("prompt_label");
+        //catprompt.setText(this.getClass().getClassLoader().getResource("tdlm/css/tdlm_style.css").getPath());
+        
+        //gridPane.getStyleClass().add("prompt_label");
+        
+        gridPane.add(catprompt, 0, 0);
         gridPane.add(category, 1, 0);
         gridPane.add(new Label(props.getProperty(DESCRIPTION_PROMPT)), 0, 1);
         gridPane.add(description, 1, 1);
-        
+
         DatePicker startDate = new DatePicker();
         DatePicker endDate = new DatePicker();
         startDate.setValue(myItem.getStartDate());
@@ -317,11 +371,15 @@ public class ToDoListController {
         
         gridPane.add(new Label(props.getProperty(COMPLETED_PROMPT)), 0, 4);
         gridPane.add(completed, 1, 4);
-
+       
+        //catprompt.setStyle("category_prompt_label");
+        //gridPane.setStyle("category_prompt_label");
+        
         dialog.getDialogPane().setContent(gridPane);
         Optional<ButtonType> result = dialog.showAndWait();
         
         
+
         if (result.isPresent() && result.get() == okButtonType) {
             //set and save the data to myItem and add it to the arraylist in the datamanager obj myManager
             myManager.getItems().get(x).setCategory(category.getText());
