@@ -31,7 +31,7 @@ import tdlm.data.ToDoItem;
  * This class serves as the file management component for this application,
  * providing all I/O services.
  *
- * @author Richard McKenna
+ * @author Richard McKenna and coauthor Arjun Rao
  * @version 1.0
  */
 public class FileManager implements AppFileComponent {
