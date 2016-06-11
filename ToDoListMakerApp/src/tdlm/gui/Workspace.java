@@ -38,7 +38,7 @@ import tdlm.data.ToDoItem;
  * This class serves as the workspace component for this application, providing
  * the user interface controls for editing work.
  *
- * @author Richard McKenna
+ * @author Richard McKenna and coauthor Arjun Rao
  * @version 1.0
  */
 public class Workspace extends AppWorkspaceComponent {
