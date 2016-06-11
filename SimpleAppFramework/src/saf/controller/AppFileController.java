@@ -33,7 +33,7 @@ import static saf.settings.AppStartupConstants.PATH_WORK;
  * This class provides the event programmed responses for the file controls
  * that are provided by this framework.
  * 
- * @author Richard McKenna
+ * @author Richard McKenna and coauthor Arjun Rao
  * @author ?
  * @version 1.0
  */
@@ -331,6 +331,11 @@ public class AppFileController {
 		app.getWorkspaceComponent().activateWorkspace(app.getGUI().getAppPane());
                 saved = true;
                 app.getGUI().updateToolbarControls(saved);
+                
+                //need to set the loaded file to be the current one so that it doesn't make you 'save as'
+                //the first time you load something
+                currentWorkFile = selectedFile;
+                
             } catch (Exception e) {
                 AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
                 dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
